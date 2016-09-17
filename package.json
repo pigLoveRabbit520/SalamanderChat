@@ -1,0 +1,20 @@
+{
+  "name": "meng",
+  "version": "1.0.0",
+  "description": "NodeJs chat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chat"
+  ],
+  "author": "Salamander",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.5.2",
+    "express": "^4.14.0",
+    "jade": "^1.11.0",
+    "socket.io": "^1.4.8"
+  }
+}
