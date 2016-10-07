@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录聊天室</title>
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta name="viewport" content="minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/css/login.css">
+
+</head>
+<body>
+<div class="wrapper">
+    <div class="header">
+        <span class="title">豆瓣</span>
+    </div>
+
+    <h1>登录聊天室</h1>
+    <div class="mobile-accounts">
+
+        <form method="post" action="##">
+
+            <div class="form-element form-element-first">
+                <label>
+                    <strong>帐号</strong>
+                    <input type="text" name="form_email" placeholder="用户名" value="">
+                </label>
+            </div>
+
+            <div class="form-element form-pwd">
+                <label>
+                    <strong>请输入密码</strong>
+                    <input type="password" name="form_password" id="form_password" placeholder="密码">
+                    <span class="openpwd"></span>
+                </label>
+            </div>
+
+
+            <div class="form-element hide">
+                <input id="remember" type="checkbox" name="remember" checked="">
+                <label for="remember">下次自动登录</label>
+            </div>
+
+            <div class="form-element submit-button">
+                <input type="hidden" name="source" value="None">
+                <input type="hidden" name="redir" value="https://www.douban.com">
+                <input class="btn-submit" type="submit" value="登录">
+                <p class="hide">在第三方应用的内置浏览器中登录豆瓣帐号，可能会泄露你的帐户信息。请谨慎登录！</p>
+            </div>
+
+            <div class="form-element login-more">
+                <a href="/register" class="lnk-flat">去注册</a>
+            </div>
+        </form>
+
+    </div>
+
+    <div class="footer">
+
+        © 2016 51nazi.com
+    </div>
+</div>
+
+
+</body>
+</html>

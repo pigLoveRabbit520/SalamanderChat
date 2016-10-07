@@ -79,6 +79,7 @@
             border-left: 0;
             background: #8CC63E;
             color: #fff;
+            margin-left: 8px;
             border-radius: 4px;
             cursor: pointer;
             -webkit-transition: .3s;
@@ -182,7 +183,7 @@
 <hr/>
 <dl id="list"></dl>
 <div id="option">
-    <input type="text" id="keywords" autofocus/>
+    <input type="text" id="keywords" placeholder="请文明聊天"/>
     <input type="button" name="" id="send" value="发送"/>
 </div>
 <div class="placeholder footer"></div>
@@ -191,11 +192,13 @@
 <script>
     var socket = io.connect('<%= url %>');
 
-    var userInfo = {
-        username: (function () {
-            return prompt('请输入聊天室昵称', '');
-        })()
-    };
+//    var userInfo = {
+//        username: (function () {
+//            return prompt('请输入聊天室昵称', '');
+//        })()
+//    };
+
+    var userInfo = 'meng';
 
     /*连接完毕，马上发送一个'join'事件，把自己的用户名告诉别人*/
     socket.emit('join', {

@@ -12,8 +12,11 @@
   "author": "Salamander",
   "license": "MIT",
   "dependencies": {
+    "connect-redis": "^3.1.0",
+    "cookie-parser": "^1.4.3",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
+    "express-session": "^1.14.1",
     "socket.io": "^1.4.8"
   }
 }

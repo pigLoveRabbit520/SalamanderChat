@@ -2,19 +2,48 @@
  * Created by mh on 2016/9/15.
  */
 var express = require('express');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var redisStore = require('connect-redis')(session);
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var config = require('./config');
 
 app.use(express.static('public'));
+
+// 设置session
+app.use(session({
+    secret: 'ldjfdhslf',
+    name: 'chat.id',
+    cookie: {maxAge: 24 * 60 * 60 * 1000},
+    resave: false,
+    saveUninitialized: true
+}));
 // 模板目录
 app.set("views", './views');
 // 模板引擎
 app.set('view engine', 'ejs');
 
+app.use(function (req, res, next) {
+    var url = req.originalUrl;
+    if(url != '/login' && url != '/register' && !req.session.uid) {
+        res.redirect('/login');
+    } else {
+        next();
+    }
+});
+
 app.get('/', function(req, res) {
-    res.render('index', {url: config.url});
+    res.render('index');
+});
+
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+
+app.get('/register', function(req, res) {
+    res.render('register');
 });
 
 // 连接列表
