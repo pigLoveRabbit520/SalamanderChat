@@ -1,15 +1,28 @@
 /**
- * Created by mh on 2016/9/15.
+ * Created by salamander on 2016/9/15.
  */
-var express = require('express');
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
-var redisStore = require('connect-redis')(session);
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var config = require('./config');
+let express = require('express');
+let session = require('express-session');
+let bodyParser = require("body-parser");
+let cookieParser = require('cookie-parser');
+let redisStore = require('connect-redis')(session);
+let app = express();
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
+let mysql = require('mysql');
 
+let config = require('./config');
+
+let conn = mysql.createConnection({
+    host: '127.0.0.1',
+    user: 'root',
+    password: '123456',
+    database:'jupan_mail',
+    port: 3306
+});
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // 设置session
@@ -44,6 +57,13 @@ app.get('/login', function(req, res) {
 
 app.get('/register', function(req, res) {
     res.render('register');
+});
+
+// 注册用户
+app.post('/register', function(req, res) {
+    let nickname = req.body.nickname;
+    let password = req.body.password;
+    console.log(nickname);
 });
 
 // 连接列表
