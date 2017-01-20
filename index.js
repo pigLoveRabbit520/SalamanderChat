@@ -17,9 +17,11 @@ let conn = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
     password: '123456',
-    database:'jupan_mail',
+    database:'chat',
     port: 3306
 });
+// 连接数据库
+conn.connect();
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -38,6 +40,7 @@ app.set("views", './views');
 // 模板引擎
 app.set('view engine', 'ejs');
 
+// 中间件
 app.use(function (req, res, next) {
     var url = req.originalUrl;
     if(url != '/login' && url != '/register' && !req.session.uid) {
@@ -48,7 +51,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', function(req, res) {
-    res.render('index');
+    res.render('index', {url: config.url});
 });
 
 app.get('/login', function(req, res) {
@@ -63,7 +66,20 @@ app.get('/register', function(req, res) {
 app.post('/register', function(req, res) {
     let nickname = req.body.nickname;
     let password = req.body.password;
-    console.log(nickname);
+    if(!nickname || !password) {
+        res.send({errcode: 1, errmsg: '填写信息不完整'});
+    } else {
+        nickname = nickname.trim();
+        password = password.trim();
+        conn.query("INSERT INTO user SET nickname = ?, password = ?", [nickname, password], function (err, value) {
+            if(err) {
+                res.send({errcode: 1, errmsg: '注册失败！'});
+            } else {
+                req.session.uid = value.insertId;
+                res.send({errcode: 0, errmsg: '用户id为' + value.insertId});
+            }
+        })
+    }
 });
 
 // 连接列表

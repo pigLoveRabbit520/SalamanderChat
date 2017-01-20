@@ -15,7 +15,7 @@
                     <div class="input" id="getInput">
                         <input type="text" name="nickname" value="" placeholder="用户名" autocapitalize="off" autocorrect="off"></div>
                     <div class="input" id="getNickName">
-                        <input type="text" class="show-pwd show" name="pass" value="" placeholder="密码 (最少6位)" autocapitalize="off"
+                        <input type="text" class="show-pwd show" name="password" value="" placeholder="密码 (最少6位)" autocapitalize="off"
                                autocorrect="off">
                     </div>
                     <div class="opt-area">
@@ -35,7 +35,11 @@
                 type: 'post',
                 data: $("#login-form").serialize(),
                 success: function (result) {
-
+                    if(result.errcode == 0) {
+                        window.location.href = '/';
+                    } else {
+                        alert(result.errmsg);
+                    }
                 }
             });
             return false;
