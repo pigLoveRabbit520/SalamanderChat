@@ -209,7 +209,7 @@
 
     /*收到加入聊天室广播后，显示消息*/
     socket.on('broadcast_join', function (data) {
-        if (data.username) {
+        if (data.nickname) {
             console.log(data.nickname + '加入了聊天室');
             var msg = {
                 text: data.nickname + '加入了聊天室'
@@ -259,7 +259,7 @@
         var itemArr = [];
         itemArr.push('<dd class="' + (data.type === 0 ? "me" : "other") + '">');
         itemArr.push('<ul>');
-        itemArr.push('<li class="nick-name">' + data.username + '</li>');
+        itemArr.push('<li class="nick-name">' + data.nickname + '</li>');
         itemArr.push('<li class="detail">');
         itemArr.push('<div class="head-icon"></div>');
         itemArr.push('<div class="text">' + data.text + '</div>');
