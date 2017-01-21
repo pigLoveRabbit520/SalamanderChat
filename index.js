@@ -1,14 +1,15 @@
 /**
- * Created by salamander on 2016/9/15.
+ * @author salamander
  */
 let express = require('express');
 let session = require('express-session');
 let bodyParser = require("body-parser");
 let cookieParser = require('cookie-parser');
-let redisStore = require('connect-redis')(session);
+let RedisStore = require('connect-redis')(session);
 let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
+var cookie = require('cookie');
 let mysql = require('mysql');
 
 let config = require('./config');
@@ -23,7 +24,8 @@ let conn = mysql.createConnection({
 // 连接数据库
 conn.connect();
 
-
+// 设置 Cookie
+app.use(cookieParser('ldjfdhslf'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
@@ -31,10 +33,16 @@ app.use(express.static('public'));
 app.use(session({
     secret: 'ldjfdhslf',
     name: 'chat.id',
+    store: new RedisStore({
+        host: "127.0.0.1",
+        port: 6379,
+        db: "0"
+    }),
     cookie: {maxAge: 24 * 60 * 60 * 1000},
     resave: false,
     saveUninitialized: true
 }));
+
 // 模板目录
 app.set("views", './views');
 // 模板引擎
@@ -58,6 +66,30 @@ app.get('/login', function(req, res) {
     res.render('login');
 });
 
+// 登录接口
+app.post('/login', function (req, res) {
+    let nickname = req.body.nickname;
+    let password = req.body.password;
+    if(!nickname || !password) {
+        res.send({errcode: 1, errmsg: '填写信息不完整'});
+    } else {
+        nickname = nickname.trim();
+        password = password.trim();
+        conn.query("SELECT id FROM user WHERE nickname = ? AND password = ?", [nickname, password], function (err, rows) {
+            if(err) {
+                res.send({errcode: 1, errmsg: '查询失败'});
+            } else {
+                if(rows && rows[0]) {
+                    req.session.uid = rows[0]['id'];
+                    res.send({errcode: 0, errmsg: '登录成功！'});
+                } else {
+                    res.send({errcode: 1, errmsg: '登录失败！'});
+                }
+            }
+        });
+    }
+});
+
 app.get('/register', function(req, res) {
     res.render('register');
 });
@@ -76,7 +108,7 @@ app.post('/register', function(req, res) {
                 res.send({errcode: 1, errmsg: '注册失败！'});
             } else {
                 req.session.uid = value.insertId;
-                res.send({errcode: 0, errmsg: '用户id为' + value.insertId});
+                res.send({errcode: 0, errmsg: '用户id为' + value.insertId, data: nickname});
             }
         })
     }
@@ -84,6 +116,17 @@ app.post('/register', function(req, res) {
 
 // 连接列表
 var connectionList = {};
+
+// 设置socket的session验证
+io.use(function (socket, next) {
+    if (socket.request.headers.cookie) {
+        socket.request.cookies = cookie.parse(socket.request.headers.cookie);
+        next();
+    } else {
+        return next(new Error('Missing cookie headers'));
+    }
+});
+
 
 
 io.sockets.on('connection', function (socket) {

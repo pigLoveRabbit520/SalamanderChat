@@ -20,32 +20,24 @@
     <h1>登录聊天室</h1>
     <div class="mobile-accounts">
 
-        <form method="post" action="##">
+        <form method="post" action="##" id="login-form">
 
             <div class="form-element form-element-first">
                 <label>
                     <strong>帐号</strong>
-                    <input type="text" name="form_email" placeholder="用户名" value="">
+                    <input type="text" name="nickname" placeholder="用户名" value="">
                 </label>
             </div>
 
             <div class="form-element form-pwd">
                 <label>
                     <strong>请输入密码</strong>
-                    <input type="password" name="form_password" id="form_password" placeholder="密码">
+                    <input type="password" name="password" id="form_password" placeholder="密码">
                     <span class="openpwd"></span>
                 </label>
             </div>
 
-
-            <div class="form-element hide">
-                <input id="remember" type="checkbox" name="remember" checked="">
-                <label for="remember">下次自动登录</label>
-            </div>
-
             <div class="form-element submit-button">
-                <input type="hidden" name="source" value="None">
-                <input type="hidden" name="redir" value="https://www.douban.com">
                 <input class="btn-submit" type="submit" value="登录">
                 <p class="hide">在第三方应用的内置浏览器中登录豆瓣帐号，可能会泄露你的帐户信息。请谨慎登录！</p>
             </div>
@@ -58,9 +50,28 @@
     </div>
 
     <div class="footer">
-
         © 2016 51nazi.com
     </div>
+
+    <script src="/js/jquery-2.0.3.min.js"></script>
+    <script>
+        $("#login-form").submit(function () {
+            $.ajax({
+                url: '/login',
+                dataType: 'json',
+                type: 'post',
+                data: $("#login-form").serialize(),
+                success: function (result) {
+                    if(result.errcode == 0) {
+                        window.location.href = '/';
+                    } else {
+                        alert(result.errmsg);
+                    }
+                }
+            });
+            return false;
+        });
+    </script>
 </div>
 
 

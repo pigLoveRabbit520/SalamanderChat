@@ -11,7 +11,7 @@
     <div data-reactid=".0">
         <div data-reactid=".0.0">
             <div class="content" data-reactid=".0.0.0"><h1 class="welcome center" data-reactid=".0.0.0.0">欢迎加入</h1>
-                <form id="login-form">
+                <form id="reg-form">
                     <div class="input" id="getInput">
                         <input type="text" name="nickname" value="" placeholder="用户名" autocapitalize="off" autocorrect="off"></div>
                     <div class="input" id="getNickName">
@@ -28,7 +28,7 @@
 </div>
     <script src="/js/jquery-2.0.3.min.js"></script>
     <script>
-        $("#login-form").submit(function () {
+        $("#reg-form").submit(function () {
             $.ajax({
                 url: '/register',
                 dataType: 'json',
