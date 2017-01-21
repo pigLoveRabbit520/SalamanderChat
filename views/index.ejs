@@ -186,8 +186,10 @@
     <input type="text" id="keywords" placeholder="请文明聊天"/>
     <input type="button" name="" id="send" value="发送"/>
 </div>
+<audio src="/audio/notify.wav" id="chat-audio">
+    您的浏览器不支持 audio 标签。
+</audio>
 <div class="placeholder footer"></div>
-<script src="/js/jquery-2.0.3.min.js"></script>
 <script src="/js/socket.io.js"></script>
 <script>
     function getCookie(name)
@@ -232,6 +234,7 @@
     /*收到别人发的消息广播后，显示消息*/
     socket.on('broadcast_say', function (data) {
         console.log(data.nickname + '说: ' + data.text);
+        document.getElementById('chat-audio').play();
         showMessage(data);
     });
 
