@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title></title>
+    <title>欢迎</title>
     <style>
         * {
             -webkit-box-sizing: border-box;
@@ -51,7 +51,8 @@
             background-color: #f2f2f2;
             -webkit-flex-direction: row;
             flex-direction: row;
-            -webkit-box-orient: horizontal
+            -webkit-box-orient: horizontal;
+            justify-content: center;
         }
 
         #option input {
@@ -59,7 +60,19 @@
             border: 1px solid #ccc
         }
 
-        input#keywords {
+        #option span {
+            display: block;
+            width: 40px;
+            height: 40px;
+            background: url("/icons/icon-img.png") no-repeat;
+            background-position: center;
+        }
+        #option #img-file {
+            display: none;
+            opacity: 0;
+        }
+
+        #option input#keywords {
             display: block;
             padding: 0 0 0 10px;
             height: 40px;
@@ -73,13 +86,12 @@
             font-size: 20px
         }
 
-        input#send {
+        #option input#send {
             width: 80px;
             height: 40px;
             border-left: 0;
             background: #8CC63E;
             color: #fff;
-            margin-left: 8px;
             border-radius: 4px;
             cursor: pointer;
             -webkit-transition: .3s;
@@ -129,6 +141,10 @@
             background-color: #fff;
             color: #333;
             word-wrap: break-word
+        }
+
+        #list dd .text img {
+            max-width: 150px;
         }
 
         #list dd .text:before {
@@ -184,6 +200,8 @@
 <dl id="list"></dl>
 <div id="option">
     <input type="text" id="keywords" placeholder="请文明聊天"/>
+    <span id="send-img"></span>
+    <input type="file" accept="image/*" id="img-file"/>
     <input type="button" name="" id="send" value="发送"/>
 </div>
 <audio src="/audio/notify.wav" id="chat-audio">
@@ -238,6 +256,13 @@
         showMessage(data);
     });
 
+    /*收到别人发的消息广播后，显示消息*/
+    socket.on('broadcast_img', function (data) {
+        console.log(data.nickname + '发送图片 ');
+        document.getElementById('chat-audio').play();
+        showMessage(data);
+    });
+
 
     /*点击发送按钮*/
     document.getElementById('send').onclick = function () {
@@ -257,6 +282,30 @@
         keywords.value = "";
         keywords.focus();
     };
+    document.getElementById('send-img').onclick = function () {
+        document.getElementById('img-file').click();
+    };
+
+    document.getElementById('img-file').addEventListener('change', function() {
+        if (this.files.length != 0) {
+            var file = this.files[0],
+                    reader = new FileReader();
+            if (!reader) {
+                alert('你的浏览器不支持FileReader');
+                return;
+            }
+            reader.onload = function(e) {
+                socket.emit('img', e.target.result);
+                showMessage({
+                    type:1,
+                    img: e.target.result
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }, false);
+
+
     /*展示消息*/
     function showMessage(data) {
         var itemArr = [];
@@ -265,7 +314,11 @@
         itemArr.push('<li class="nick-name">' + data.nickname + '</li>');
         itemArr.push('<li class="detail">');
         itemArr.push('<div class="head-icon"></div>');
-        itemArr.push('<div class="text">' + data.text + '</div>');
+        if(data.type == 0) {
+            itemArr.push('<div class="text">' + data.text + '</div>');
+        } else {
+            itemArr.push('<div class="text">' + '<img src="' + data.img  + '"' + '</div>');
+        }
         itemArr.push('</li>');
         itemArr.push('</ul>');
         itemArr.push('</dd>');

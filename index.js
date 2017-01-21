@@ -179,8 +179,19 @@ io.sockets.on('connection', function (socket) {
     socket.on('say', function (data) {
         console.log("Received Message: " + data.text);
         socket.broadcast.emit('broadcast_say', {
+            type : 0,
             nickname: session.nickname,
             text: data.text
+        });
+    });
+
+    /* 用户发言，向其他用户广播其信息 */
+    socket.on('img', function (data) {
+        console.log("Received img: ");
+        socket.broadcast.emit('broadcast_img', {
+            type : 1,
+            nickname: session.nickname,
+            img: data
         });
     });
 
