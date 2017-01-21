@@ -12,7 +12,9 @@
   "author": "Salamander",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.16.0",
     "connect-redis": "^3.1.0",
+    "cookie": "^0.3.1",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
