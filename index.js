@@ -12,6 +12,8 @@ let io = require('socket.io')(http);
 var cookie = require('cookie');
 let mysql = require('mysql');
 
+const COOKIE_SECRET = 'ldjfdhslf';
+
 let config = require('./config');
 
 let conn = mysql.createConnection({
@@ -21,23 +23,26 @@ let conn = mysql.createConnection({
     database:'chat',
     port: 3306
 });
+
+let sessionStore =  new RedisStore({
+        host: "127.0.0.1",
+        port: 6379,
+        db: "0"
+});
+
 // 连接数据库
 conn.connect();
 
 // 设置 Cookie
-app.use(cookieParser('ldjfdhslf'));
+app.use(cookieParser(COOKIE_SECRET));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // 设置session
 app.use(session({
-    secret: 'ldjfdhslf',
+    secret: COOKIE_SECRET,
     name: 'chat.id',
-    store: new RedisStore({
-        host: "127.0.0.1",
-        port: 6379,
-        db: "0"
-    }),
+    store: sessionStore,
     cookie: {maxAge: 24 * 60 * 60 * 1000},
     resave: false,
     saveUninitialized: true
@@ -75,12 +80,13 @@ app.post('/login', function (req, res) {
     } else {
         nickname = nickname.trim();
         password = password.trim();
-        conn.query("SELECT id FROM user WHERE nickname = ? AND password = ?", [nickname, password], function (err, rows) {
+        conn.query("SELECT id, nickname FROM user WHERE nickname = ? AND password = ?", [nickname, password], function (err, rows) {
             if(err) {
                 res.send({errcode: 1, errmsg: '查询失败'});
             } else {
                 if(rows && rows[0]) {
                     req.session.uid = rows[0]['id'];
+                    req.session.nickname = rows[0]['nickname'];
                     res.send({errcode: 0, errmsg: '登录成功！'});
                 } else {
                     res.send({errcode: 1, errmsg: '登录失败！'});
@@ -107,31 +113,49 @@ app.post('/register', function(req, res) {
             if(err) {
                 res.send({errcode: 1, errmsg: '注册失败！'});
             } else {
-                req.session.uid = value.insertId;
-                res.send({errcode: 0, errmsg: '用户id为' + value.insertId, data: nickname});
+                res.send({errcode: 0, errmsg: '用户id为' + value.insertId});
             }
         })
     }
 });
 
-// 连接列表
-var connectionList = {};
-
 // 设置socket的session验证
 io.use(function (socket, next) {
-    if (socket.request.headers.cookie) {
-        socket.request.cookies = cookie.parse(socket.request.headers.cookie);
-        next();
+    let cookies = cookie.parse(socket.request.headers.cookie);
+    let sessionId = cookies['chat.id'];
+    if(sessionId) {
+        var connected = cookieParser.signedCookie(sessionId, COOKIE_SECRET);
+        if(connected) {
+            sessionStore.get(connected, function (error, session) {
+                if (error) {
+                    return next(new Error(error.message));
+                } else {
+                    // save the session data and accept the connection
+                    if (session.uid) {
+                        socket.request.session = session;
+                        next(null, true)
+                    } else {
+                        next('No login')
+                    }
+                }
+            })
+        } else {
+            return next(new Error('No Session'));
+        }
     } else {
-        return next(new Error('Missing cookie headers'));
+        return next(new Error('No Session'));
     }
 });
 
 
+// 连接列表
+var connectionList = {};
 
 io.sockets.on('connection', function (socket) {
 
-    var socketId = socket.id;
+    let socketId = socket.id;
+
+    let session = socket.request.session; // session
 
     /*客户端连接时，保存socketId和用户名*/
     connectionList[socketId] = {
@@ -139,28 +163,23 @@ io.sockets.on('connection', function (socket) {
     };
 
     /* 用户进入聊天室，向其他用户广播其用户名*/
-    socket.on('join', function (data) {
-        console.log(data.username + ' join, IP: ' + socket.client.conn.remoteAddress);
-        connectionList[socketId].username = data.username;
-        socket.broadcast.emit('broadcast_join', data);
-    });
+    console.log(session.nickname + ' join, IP: ' + socket.client.conn.remoteAddress);
+    socket.broadcast.emit('broadcast_join', {nickname : session.nickname});
 
     /*用户离开聊天室，向其他用户广播其离开*/
     socket.on('disconnect', function () {
-        if (connectionList[socketId].username) {
-            console.log(connectionList[socketId].username + ' quit');
-            socket.broadcast.emit('broadcast_quit', {
-                username: connectionList[socketId].username
-            });
-        }
+        console.log(session.nickname + ' quit');
+        socket.broadcast.emit('broadcast_quit', {
+            username: session.nickname
+        });
         delete connectionList[socketId];
     });
 
-    /*用户发言，向其他用户广播其信息*/
+    /* 用户发言，向其他用户广播其信息 */
     socket.on('say', function (data) {
         console.log("Received Message: " + data.text);
         socket.broadcast.emit('broadcast_say', {
-            username: connectionList[socketId].username,
+            nickname: session.nickname,
             text: data.text
         });
     });

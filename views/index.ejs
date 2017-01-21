@@ -190,6 +190,14 @@
 <script src="/js/jquery-2.0.3.min.js"></script>
 <script src="/js/socket.io.js"></script>
 <script>
+    function getCookie(name)
+    {
+        var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+        if(arr = document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
     var socket = io.connect('<%= url %>');
 
 //    var userInfo = {
@@ -198,38 +206,32 @@
 //        })()
 //    };
 
-    var userInfo = 'meng';
-
-    /*连接完毕，马上发送一个'join'事件，把自己的用户名告诉别人*/
-    socket.emit('join', {
-        username: userInfo.username
-    });
 
     /*收到加入聊天室广播后，显示消息*/
     socket.on('broadcast_join', function (data) {
         if (data.username) {
-            console.log(data.username + '加入了聊天室');
-            var data = {
-                text: data.username + '加入了聊天室'
+            console.log(data.nickname + '加入了聊天室');
+            var msg = {
+                text: data.nickname + '加入了聊天室'
             };
-            showNotice(data);
+            showNotice(msg);
         }
     });
 
     /*收到俩开聊天室广播后，显示消息*/
     socket.on('broadcast_quit', function (data) {
-        if (data.username) {
-            console.log(data.username + '离开了聊天室');
-            var data = {
-                text: data.username + '离开了聊天室'
+        if (data.nickname) {
+            console.log(data.nickname + '离开了聊天室');
+            var msg = {
+                text: data.nickname + '离开了聊天室'
             };
-            showNotice(data);
+            showNotice(msg);
         }
     });
 
     /*收到别人发的消息广播后，显示消息*/
     socket.on('broadcast_say', function (data) {
-        console.log(data.username + '说: ' + data.text);
+        console.log(data.nickname + '说: ' + data.text);
         showMessage(data);
     });
 
@@ -243,8 +245,7 @@
         }
         var data = {
             text: keywords.value,
-            type: 0,
-            username: userInfo.username
+            type: 0
         };
         /*向服务器提交一个say事件，发送消息*/
         socket.emit('say', data);

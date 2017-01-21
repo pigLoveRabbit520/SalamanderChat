@@ -33,10 +33,10 @@
                 url: '/register',
                 dataType: 'json',
                 type: 'post',
-                data: $("#login-form").serialize(),
+                data: $("#reg-form").serialize(),
                 success: function (result) {
                     if(result.errcode == 0) {
-                        window.location.href = '/';
+                        window.location.href = '/login';
                     } else {
                         alert(result.errmsg);
                     }
