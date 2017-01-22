@@ -179,7 +179,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('say', function (data) {
         console.log("Received Message: " + data.text);
         socket.broadcast.emit('broadcast_say', {
-            type : 0,
+            dataType : 0,
             nickname: session.nickname,
             text: data.text
         });
@@ -189,7 +189,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('img', function (data) {
         console.log("Received img: ");
         socket.broadcast.emit('broadcast_img', {
-            type : 1,
+            dataType : 1,
             nickname: session.nickname,
             img: data
         });

@@ -297,7 +297,8 @@
             reader.onload = function(e) {
                 socket.emit('img', e.target.result);
                 showMessage({
-                    type:1,
+                    type:0,
+                    dataType : 1,
                     img: e.target.result
                 });
             };
@@ -314,10 +315,10 @@
         itemArr.push('<li class="nick-name">' + data.nickname + '</li>');
         itemArr.push('<li class="detail">');
         itemArr.push('<div class="head-icon"></div>');
-        if(data.type == 0) {
-            itemArr.push('<div class="text">' + data.text + '</div>');
-        } else {
+        if(data.dataType === 1) {
             itemArr.push('<div class="text">' + '<img src="' + data.img  + '"' + '</div>');
+        } else {
+            itemArr.push('<div class="text">' + data.text + '</div>');
         }
         itemArr.push('</li>');
         itemArr.push('</ul>');
