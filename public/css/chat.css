@@ -1,0 +1,187 @@
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box
+}
+input {
+    -webkit-appearance: none;
+}
+
+.tc {
+    text-align: center
+}
+
+body, dd, dl, input, li, ul {
+    margin: 0;
+    padding: 0
+}
+
+hr {
+    margin: 20px 0;
+    height: 0;
+    border: 0;
+    border-top: 1px solid #ccc
+}
+
+body {
+    background-color: #f2f2f2;
+    font: 12px/1.444 "microsoft yahei"
+}
+
+ul {
+    padding: 0 10px;
+    list-style: none
+}
+
+#option {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: -webkit-flex;
+    display: flex;
+    display: -webkit-box;
+    padding: 10px;
+    width: 100%;
+    background-color: #f2f2f2;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-box-orient: horizontal;
+    justify-content: center;
+}
+
+#option input {
+    outline: 0;
+    border: 1px solid #ccc
+}
+
+#option span {
+    display: block;
+    width: 40px;
+    height: 40px;
+    background: url("/icons/icon-img.png") no-repeat;
+    background-position: center;
+}
+#option #img-file {
+    display: none;
+    opacity: 0;
+}
+
+#option input#keywords {
+    display: block;
+    padding: 0 0 0 10px;
+    height: 40px;
+    border-right: 0;
+    -webkit-flex: 1;
+    flex: 1;
+    -webkit-box-flex: 1
+}
+
+input#keywords:focus {
+    font-size: 20px
+}
+
+#option input#send {
+    width: 80px;
+    height: 40px;
+    border-left: 0;
+    background: #8CC63E;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    -webkit-transition: .3s;
+    transition: .3s
+}
+
+input#send:hover {
+    background: #2FBF08
+}
+
+input#send:active {
+    background: #009100
+}
+
+#list dd {
+    overflow: hidden;
+    padding: 5px 0
+}
+
+#list dd li {
+    overflow: hidden
+}
+
+#list dd .nick-name {
+    padding: 5px;
+    color: #999
+}
+
+#list dd .head-icon {
+    float: left;
+    margin: 0 5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background: url(/icons/user_a.png) no-repeat center center;
+    background-size: cover
+}
+
+#list dd .text {
+    position: relative;
+    float: left;
+    padding: 6px 10px;
+    max-width: 60%;
+    min-height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+    color: #333;
+    word-wrap: break-word
+}
+
+#list dd .text img {
+    max-width: 150px;
+}
+
+#list dd .text:before {
+    position: absolute;
+    top: 10px;
+    width: 0;
+    height: 0;
+    content: ''
+}
+
+#list dd.me .text:before {
+    right: -4px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #8CC63E
+}
+
+#list dd.other .text:before {
+    left: -4px;
+    width: 5px;
+    height: 5px;
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    background-color: #fff;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg)
+}
+
+#list dd.me .nick-name {
+    display: none;
+    text-align: right
+}
+
+#list dd.me .head-icon {
+    float: right;
+    background-image: url(/icons/user_b.png)
+}
+
+#list dd.me .text {
+    float: right;
+    border: 0;
+    background-color: #8CC63E
+}
+
+.placeholder.footer {
+    height: 50px
+}

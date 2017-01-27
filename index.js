@@ -64,7 +64,8 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', function(req, res) {
-    res.render('index', {url: config.url});
+    //res.render('index', {url: config.url});
+    res.render('main');
 });
 
 app.get('/login', function(req, res) {
