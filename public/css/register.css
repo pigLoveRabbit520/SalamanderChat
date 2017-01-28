@@ -218,7 +218,7 @@ td, th {
     width: 100%
 }
 
-.popup.list .wp {
+.popup.list-item .wp {
     margin: 50px 10px auto;
     height: 60%;
     margin-top: 25%;

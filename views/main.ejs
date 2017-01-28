@@ -2,25 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- ios设备禁止将数字识别为可点击的tel link  -->
+    <meta content="telephone=no,email=no" name="format-detection" />
     <title>主界面</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/css/weui.min.css">
-    <script src="/js/jquery-2.0.3.min.js"></script>
+    <script src="/js/zepto.min.js"></script>
+    <script src="/js/socket.io.js"></script>
+    <script src="/js/classie.js"></script>
+    <style>
+        ul, ol {
+            list-style: none;
+        }
+        .list-item {
+            height: 75px;
+            position: relative;
+            border-bottom: 1px solid #e6e6e6;
+        }
+        .list-item .profile {
+            display: block;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            background: url("/icons/icon-default-profile.png") no-repeat;
+            background-size: 45px;
+        }
+        .list-item .title {
+            font-weight: bold;
+            font-size: 17px;
+            color: #0a0a0a;
+            position: absolute;
+            left: 70px;
+            top: 15px;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
 </head>
 <body>
-<div class="weui-tab">
-    <div class="weui-tab__panel">
+<div>
+    <ul>
+        <% for(var uid in users) { %>
+        <li uid="<%= uid %>" class="list-item" v-on:click="greet">
+            <span class="profile"></span>
+            <span class="title"><%= users[uid].nickname %></span>
+        </li>
+        <% } %>
+    </ul>
+</div>
 
-    </div>
-    <div class="weui-tabbar">
-        <a href="javascript:;" class="weui-tabbar__item weui-bar__item_on">
-            <img src="/icons/icon-contacts.png" alt="" class="weui-tabbar__icon">
-            <p class="weui-tabbar__label">通讯录</p>
-        </a>
-        <a href="javascript:;" class="weui-tabbar__item">
-            <img src="/icons/icon-me.png" alt="" class="weui-tabbar__icon">
-            <p class="weui-tabbar__label">我</p>
-        </a>
+<div class="bottom-nav">
+    <div class="weui-tab">
+        <div class="weui-tab__panel">
+
+        </div>
+        <div class="weui-tabbar">
+            <a href="javascript:;" class="weui-tabbar__item weui-bar__item_on">
+                <img src="/icons/icon-contacts.png" alt="" class="weui-tabbar__icon">
+                <p class="weui-tabbar__label">通讯录</p>
+            </a>
+            <a href="javascript:;" class="weui-tabbar__item">
+                <img src="/icons/icon-me.png" alt="" class="weui-tabbar__icon">
+                <p class="weui-tabbar__label">我</p>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -29,6 +80,13 @@
         $('.weui-tabbar__item').on('click', function () {
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
-    });</script>
+    });
+    var socket = io.connect('<%= url %>');
+
+
+
+
+
+</script>
 </body>
 </html>

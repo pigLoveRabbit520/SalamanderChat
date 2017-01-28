@@ -57,7 +57,7 @@ ul {
     display: block;
     width: 40px;
     height: 40px;
-    background: url("/icons/icon-img.png") no-repeat;
+    background: url("/icons/icon-open-img.png") no-repeat;
     background-position: center;
 }
 #option #img-file {

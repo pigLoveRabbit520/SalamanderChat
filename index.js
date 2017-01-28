@@ -9,7 +9,7 @@ let RedisStore = require('connect-redis')(session);
 let app = express();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
-var cookie = require('cookie');
+let cookie = require('cookie');
 let mysql = require('mysql');
 
 const COOKIE_SECRET = 'ldjfdhslf';
@@ -27,7 +27,7 @@ let conn = mysql.createConnection({
 let sessionStore =  new RedisStore({
         host: "127.0.0.1",
         port: 6379,
-        db: "0"
+        db: 0
 });
 
 // 连接数据库
@@ -64,8 +64,8 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', function(req, res) {
-    //res.render('index', {url: config.url});
-    res.render('main');
+    res.render('main', {users: onlineUsers, url: config.url});
+    console.log(onlineUsers);
 });
 
 app.get('/login', function(req, res) {
@@ -136,7 +136,7 @@ io.use(function (socket, next) {
                         socket.request.session = session;
                         next(null, true)
                     } else {
-                        next('No login')
+                        next(new Error('No Login'))
                     }
                 }
             })
@@ -149,8 +149,8 @@ io.use(function (socket, next) {
 });
 
 
-// 连接列表
-var connectionList = {};
+// 在线用户
+var onlineUsers = {};
 
 io.sockets.on('connection', function (socket) {
 
@@ -158,9 +158,9 @@ io.sockets.on('connection', function (socket) {
 
     let session = socket.request.session; // session
 
-    /*客户端连接时，保存socketId和用户名*/
-    connectionList[socketId] = {
-        socket: socket
+    /* 客户端连接时，保存socketId和用户名 */
+    onlineUsers[socketId] = {
+        nickname : session.nickname
     };
 
     /* 用户进入聊天室，向其他用户广播其用户名*/
@@ -173,7 +173,7 @@ io.sockets.on('connection', function (socket) {
         socket.broadcast.emit('broadcast_quit', {
             username: session.nickname
         });
-        delete connectionList[socketId];
+        delete onlineUsers[socketId];
     });
 
     /* 用户发言，向其他用户广播其信息 */
@@ -195,7 +195,6 @@ io.sockets.on('connection', function (socket) {
             img: data
         });
     });
-
 
 });
 
