@@ -8,36 +8,7 @@
     <link rel="stylesheet" href="/css/chat.css">
 </head>
 <body>
-<h1 class="tc">小孟聊天室!</h1>
-<hr/>
-<dl id="list">
-    <template >
-        <dd v-bind:class="message.type | convertType"  v-for="message in messages">
-            <ul>
-                <li class="nick-name">{{ message.nickname }}</li>
-                <li class="detail">
-                    <div class="head-icon"></div>
-                    <div class="text" v-if="message.dataType === 1">
-                        <img src="{{ message.img }}">
-                    </div>
-                    <div class="text" v-else>
-                        {{ message.text }}
-                    </div>
-                </li>
-            </ul>
-        </dd>
-    </template>
-</dl>
-<div id="option">
-    <input type="text" id="keywords" placeholder="请文明聊天"/>
-    <span id="send-img"></span>
-    <input type="file" accept="image/*" id="img-file"/>
-    <input type="button" name="" id="send" value="发送"/>
-</div>
-<audio src="/audio/notify.wav" id="chat-audio">
-    您的浏览器不支持 audio 标签。
-</audio>
-<div class="placeholder footer"></div>
+
 <script src="/js/socket.io.js"></script>
 <script>
     var socket = io.connect('<%= url %>');

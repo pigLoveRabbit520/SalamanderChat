@@ -1,16 +1,8 @@
-* {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box
-}
-input {
-    -webkit-appearance: none;
-}
-
-.tc {
+#chat-ui .tc {
     text-align: center
 }
 
-body, dd, dl, input, li, ul {
+#chat-ui body, dd, dl, input, li, ul {
     margin: 0;
     padding: 0
 }
@@ -22,12 +14,12 @@ hr {
     border-top: 1px solid #ccc
 }
 
-body {
+.chat-body {
     background-color: #f2f2f2;
     font: 12px/1.444 "microsoft yahei"
 }
 
-ul {
+#list ul {
     padding: 0 10px;
     list-style: none
 }
