@@ -62,7 +62,7 @@
 <body>
 <div id="app">
     <ul v-cloak>
-        <li uid="{{ uid }}" v-for="(user, uid) in users" class="list-item" v-on:click="showChatUI">
+        <li v-for="user in users" class="list-item" v-on:click="showChatUI(user.uid)">
             <span class="profile"></span>
             <span class="title">{{ user.nickname }}</span>
         </li>
@@ -95,27 +95,29 @@
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
     });
+    var socket = io.connect('<%= url %>');
+    var uid = null;
+
     var mainApp = new Vue({
         el: "#app",
         data: {
             users: {}
         },
         methods: {
-            showChatUI: function () {
+            showChatUI: function (id) {
                 $('#chat-ui').addClass('cbp-spmenu-open');
+                // 记录聊天用户
+                uid = id;
             }
         }
     });
-
-    var socket = io.connect('<%= url %>');
 
     /* 在线用户列表 */
     socket.on('online users', function (data) {
         mainApp.$data.users = data;
     });
 
-
-
 </script>
+<script src="./js/single-chat.js"></script>
 </body>
 </html>

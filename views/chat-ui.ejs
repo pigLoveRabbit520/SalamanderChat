@@ -9,7 +9,7 @@
                     <li class="detail">
                         <div class="head-icon"></div>
                         <div class="text" v-if="message.dataType === 1">
-                            <img src="{{ message.img }}">
+                            <img :src="message.img">
                         </div>
                         <div class="text" v-else>
                             {{ message.text }}
@@ -30,50 +30,3 @@
     </audio>
     <div class="placeholder footer"></div>
 </nav>
-<script>
-    var chatApp = new Vue({
-        el: "#list",
-        data: {
-            messages: []
-        },
-        filters: {
-            convertType: function (type) {
-                return type === 0 ? 'me' : 'other';
-            }
-        }
-    });
-
-    document.getElementById('img-file').addEventListener('change', function() {
-        if (this.files.length != 0) {
-            var file = this.files[0],
-                    reader = new FileReader();
-            if (!reader) {
-                alert('你的浏览器不支持FileReader');
-                return;
-            }
-            reader.onload = function(e) {
-                socket.emit('img', e.target.result);
-                showMessage({
-                    type:0,
-                    dataType : 1,
-                    img: e.target.result
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    }, false);
-
-    /*展示通知*/
-    function showNotice(data) {
-        var item = '<dd class="tc"><span>' + data.text + '</span><dd>';
-        document.getElementById('list').innerHTML += item;
-    }
-
-    /*回车事件*/
-    document.onkeyup = function (e) {
-        if (!e) e = window.event;
-        if ((e.keyCode || e.which) == 13) {
-            document.getElementById('send').click();
-        }
-    }
-</script>
