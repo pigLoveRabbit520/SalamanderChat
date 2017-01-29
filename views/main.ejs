@@ -25,6 +25,9 @@
         ul, ol {
             list-style: none;
         }
+        [v-cloak] {
+            display: none;
+        }
         .list-item {
             height: 75px;
             position: relative;
@@ -58,7 +61,7 @@
 </head>
 <body>
 <div id="app">
-    <ul>
+    <ul v-cloak>
         <li uid="{{ uid }}" v-for="(user, uid) in users" class="list-item" v-on:click="showChatUI">
             <span class="profile"></span>
             <span class="title">{{ user.nickname }}</span>
@@ -92,17 +95,23 @@
             $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
         });
     });
-    var socket = io.connect('<%= url %>');
     var mainApp = new Vue({
         el: "#app",
         data: {
-            users: <%- JSON.stringify(users) %>
+            users: {}
         },
         methods: {
             showChatUI: function () {
                 $('#chat-ui').addClass('cbp-spmenu-open');
             }
         }
+    });
+
+    var socket = io.connect('<%= url %>');
+
+    /* 在线用户列表 */
+    socket.on('online users', function (data) {
+        mainApp.$data.users = data;
     });
 
 

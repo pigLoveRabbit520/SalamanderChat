@@ -8,39 +8,38 @@ let cookieParser = require('cookie-parser');
 let RedisStore = require('connect-redis')(session);
 let app = express();
 let http = require('http').Server(app);
-let io = require('socket.io')(http);
 let cookie = require('cookie');
 let mysql = require('mysql');
 
-const COOKIE_SECRET = 'ldjfdhslf';
-
 let config = require('./config');
+
+let sessionStore =  new RedisStore({
+    host: "127.0.0.1",
+    port: 6379,
+    db: 0
+});
+
+let chat = require('./chat')(http, sessionStore);
 
 let conn = mysql.createConnection({
     host: '127.0.0.1',
     user: 'root',
-    password: '123456',
+    password: '123456mh',
     database:'chat',
     port: 3306
-});
-
-let sessionStore =  new RedisStore({
-        host: "127.0.0.1",
-        port: 6379,
-        db: 0
 });
 
 // 连接数据库
 conn.connect();
 
 // 设置 Cookie
-app.use(cookieParser(COOKIE_SECRET));
+app.use(cookieParser(config.COOKIE_SECRET));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // 设置session
 app.use(session({
-    secret: COOKIE_SECRET,
+    secret: config.COOKIE_SECRET,
     name: 'chat.id',
     store: sessionStore,
     cookie: {maxAge: 24 * 60 * 60 * 1000},
@@ -64,8 +63,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/', function(req, res) {
-    res.render('main', {users: onlineUsers, url: config.url});
-    console.log(onlineUsers);
+    res.render('main', {url: config.url});
 });
 
 app.get('/login', function(req, res) {
@@ -120,83 +118,6 @@ app.post('/register', function(req, res) {
     }
 });
 
-// 设置socket的session验证
-io.use(function (socket, next) {
-    let cookies = cookie.parse(socket.request.headers.cookie);
-    let sessionId = cookies['chat.id'];
-    if(sessionId) {
-        var connected = cookieParser.signedCookie(sessionId, COOKIE_SECRET);
-        if(connected) {
-            sessionStore.get(connected, function (error, session) {
-                if (error) {
-                    return next(new Error(error.message));
-                } else {
-                    // save the session data and accept the connection
-                    if (session.uid) {
-                        socket.request.session = session;
-                        next(null, true)
-                    } else {
-                        next(new Error('No Login'))
-                    }
-                }
-            })
-        } else {
-            return next(new Error('No Session'));
-        }
-    } else {
-        return next(new Error('No Session'));
-    }
-});
-
-
-// 在线用户
-var onlineUsers = {};
-
-io.sockets.on('connection', function (socket) {
-
-    let socketId = socket.id;
-
-    let session = socket.request.session; // session
-
-    /* 客户端连接时，保存socketId和用户名 */
-    onlineUsers[socketId] = {
-        nickname : session.nickname
-    };
-
-    /* 用户进入聊天室，向其他用户广播其用户名*/
-    console.log(session.nickname + ' join, IP: ' + socket.client.conn.remoteAddress);
-    socket.broadcast.emit('broadcast_join', {nickname : session.nickname});
-
-    /*用户离开聊天室，向其他用户广播其离开*/
-    socket.on('disconnect', function () {
-        console.log(session.nickname + ' quit');
-        socket.broadcast.emit('broadcast_quit', {
-            username: session.nickname
-        });
-        delete onlineUsers[socketId];
-    });
-
-    /* 用户发言，向其他用户广播其信息 */
-    socket.on('say', function (data) {
-        console.log("Received Message: " + data.text);
-        socket.broadcast.emit('broadcast_say', {
-            dataType : 0,
-            nickname: session.nickname,
-            text: data.text
-        });
-    });
-
-    /* 用户发言，向其他用户广播其信息 */
-    socket.on('img', function (data) {
-        console.log("Received img: ");
-        socket.broadcast.emit('broadcast_img', {
-            dataType : 1,
-            nickname: session.nickname,
-            img: data
-        });
-    });
-
-});
 
 http.listen(3000, function() {
     console.log('listening on *:3000');
