@@ -13,6 +13,11 @@ var chatApp = new Vue({
     }
 });
 
+$('.back-btn').on('click', function () {
+    uid = null;
+    $('#chat-ui').removeClass('cbp-spmenu-open');
+});
+
 // 用户消息，根据不同的socketId
 var usersMessages = {};
 
